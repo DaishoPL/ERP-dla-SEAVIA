@@ -1,9 +1,24 @@
 {
-  "name": "ERP-dla-SEAVIA",
+  "name": "erp-dla-seavia",
   "version": "1.0.0",
+  "description": "System ERP dla firmy SEAVIA",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Brak skonfigurowanych testów\" && exit 0"
+  },
+  "keywords": [
+    "erp",
+    "seavia",
+    "management"
+  ],
+  "author": "Adam Bogdański",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
