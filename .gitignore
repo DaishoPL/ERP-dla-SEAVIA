@@ -2,7 +2,7 @@
 
 Plik .gitignore dla projektu ERP SEAVIA
 
-Specyfikacja dla środowiska Node.js
+Specyfikacja dla środowiska Node.js & VPS Production
 
 ==========================================
 
@@ -27,6 +27,25 @@ Bardzo ważne! Nigdy nie commitujemy haseł, kluczy API ani lokalnych konfigurac
 *.private
 *.pem
 
+--- Lokalne bazy danych (Local Databases) ---
+
+Jeśli będziesz używać lokalnej bazy danych do testów (np. SQLite)
+
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+--- Narzędzia wdrożeniowe i SFTP (Deployment & FTP) ---
+
+Bardzo ważne dla pracy na VPS! Wtyczki VS Code (np. SFTP) przechowują tu dane logowania w otwartym tekście.
+
+.vscode/sftp.json
+.ftpdeploy/
+.deploy/
+.ftp-deploy-sync-state.json
+ftpsync.settings
+
 --- Pliki generowane podczas budowania (Build outputs) ---
 
 Katalogi z wersją produkcyjną kodu (np. po kompilacji TypeScriptu lub bundlerów)
@@ -47,6 +66,14 @@ npm-debug.log
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+--- Menedżery procesów (np. PM2 na VPS) ---
+
+Jeśli na serwerze uruchomisz aplikację przez PM2, te pliki powinny być ignorowane
+
+.pm2/
+pids/
+*.pid
 
 --- Diagnostyka i pokrycie testami (Diagnostic & Coverage) ---
 
