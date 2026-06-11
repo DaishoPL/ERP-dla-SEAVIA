@@ -1,6 +1,39 @@
+# Zależności (Dependencies)
 node_modules/
+jspm_packages/
+web_modules/
+
+# Pliki środowiskowe i klucze (Zabezpieczenie przed wyciekiem danych)
 .env
-.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.local
+
+# Pliki generowane podczas budowania (Build outputs)
 dist/
 build/
+out/
+.next/
+.nuxt/
+
+# Logi (Logs)
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Pliki systemowe (OS files)
+.DS_Store
+Thumbs.db
+
+# Pliki IDE i edytorów (Opcjonalnie, bardzo przydatne)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
