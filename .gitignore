@@ -1,39 +1,78 @@
-# Zależności (Dependencies)
+==========================================
+
+Plik .gitignore dla projektu ERP SEAVIA
+
+Specyfikacja dla środowiska Node.js
+
+==========================================
+
+--- Zależności (Dependencies) ---
+
+Ignorujemy pobierane pakiety, ponieważ są one odtwarzane z package.json / package-lock.json
+
 node_modules/
 jspm_packages/
 web_modules/
 
-# Pliki środowiskowe i klucze (Zabezpieczenie przed wyciekiem danych)
+--- Pliki środowiskowe i klucze (Secrets & Environment) ---
+
+Bardzo ważne! Nigdy nie commitujemy haseł, kluczy API ani lokalnych konfiguracji bazy danych
+
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 *.env.local
+*.private
+*.pem
 
-# Pliki generowane podczas budowania (Build outputs)
+--- Pliki generowane podczas budowania (Build outputs) ---
+
+Katalogi z wersją produkcyjną kodu (np. po kompilacji TypeScriptu lub bundlerów)
+
 dist/
 build/
 out/
 .next/
 .nuxt/
+.cache/
 
-# Logi (Logs)
-*.log
-npm-debug.log*
+--- Logi (Logs) ---
+
+Logi błędów i działania aplikacji (przydatne lokalnie, ale niepotrzebne w repozytorium)
+
+.log
+npm-debug.log
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Pliki systemowe (OS files)
+--- Diagnostyka i pokrycie testami (Diagnostic & Coverage) ---
+
+coverage/
+.nyc_output/
+
+--- Pliki systemowe (OS files) ---
+
+Śmieci generowane automatycznie przez systemy operacyjne macOS i Windows
+
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Pliki IDE i edytorów (Opcjonalnie, bardzo przydatne)
+--- Pliki IDE i edytorów (Editor configs) ---
+
+Ustawienia edytorów kodu (opcjonalne, ale bardzo zalecane)
+
 .vscode/
 .idea/
 *.suo
-*.ntvs*
+.ntvs
 *.njsproj
 *.sln
 *.sw?
