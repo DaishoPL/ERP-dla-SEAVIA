@@ -59,7 +59,6 @@ export default function Login({ onLoginSuccess }) {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // System sam wykryje czy jesteś na localhost, czy na VPS erp.dotsens.org
           redirectTo: `${window.location.origin}/profile`
         }
       });
@@ -119,7 +118,7 @@ export default function Login({ onLoginSuccess }) {
 
           {isForgotPasswordMode ? (
             resetSent ? (
-              /* --- Widok po wysłaniu e-maila --- */
+              /* Widok po wysłaniu maila */
               <div className="text-center py-6 space-y-4 animate-in zoom-in-95">
                 <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
                   <CheckCircle2 size={24} />
@@ -140,7 +139,7 @@ export default function Login({ onLoginSuccess }) {
                 </button>
               </div>
             ) : (
-              /* --- Formularz odzyskiwania hasła --- */
+              /* Formularz odzyskiwania hasła */
               <form onSubmit={handlePasswordResetRequest} className="space-y-6">
                 <p className="text-xs text-slate-500 leading-relaxed mb-4">
                   Wpisz swój adres e-mail, aby otrzymać bezpieczny jednorazowy link do ustawienia nowego hasła w systemie.
@@ -186,7 +185,7 @@ export default function Login({ onLoginSuccess }) {
               </form>
             )
           ) : (
-            /* --- Standardowe logowanie --- */
+            /* Standardowe logowanie */
             <div className="space-y-6">
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
@@ -259,7 +258,6 @@ export default function Login({ onLoginSuccess }) {
                 disabled={isLoading}
                 className="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-4 px-6 rounded-2xl border-2 border-slate-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-sm shadow-sm hover:shadow"
               >
-                {/* SVG Logo Google */}
                 <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21.35,11.1H12v2.7h5.38C16.88,16.27,14.73,18,12,18c-3.31,0-6-2.69-6-6s2.69-6,6-6c1.47,0,2.81,0.53,3.87,1.43l2.03-2.03C16.21,3.82,14.22,3,12,3C7.03,3,3,7.03,3,12s4.03,9,9,9c4.41,0,8.25-3.13,8.91-7.5H21.35z" fill="#4285F4" />
                   <path d="M12,21c4.41,0,8.25-3.13,8.91-7.5H12V21z" fill="#34A853" />
@@ -278,129 +276,6 @@ export default function Login({ onLoginSuccess }) {
           </div>
         </div>
 
-      </div>
-    </div>
-  );
-}
-
-
-C. Okno zmiany hasła po powrocie z maila (src/pages/TechnicianProfile.jsx lub jako osobny komponent)
-
-Gdy użytkownik kliknie w link weryfikacyjny, który przyjdzie na jego e-mail, Supabase przekieruje go na adres: https://erp.dotsens.org/profile?reset=true.
-
-Musimy "złapać" ten moment w React i wyświetlić mu okienko do wpisania nowego hasła. Dodaj ten komponent na dole pliku TechnicianProfile.jsx i wyrenderuj go wewnątrz głównego kontenera:
-
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { Lock, Loader2, CheckCircle2 } from 'lucide-react';
-
-export function PasswordResetModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState(null);
-
-  useEffect(() => {
-    // Sprawdzamy, czy w adresie URL znajduje się parametr reset=true
-    const hasResetParam = window.location.search.includes('reset=true');
-    const isRecoverySession = window.location.hash.includes('type=recovery') || window.location.hash.includes('access_token=');
-
-    if (hasResetParam || isRecoverySession) {
-      setIsOpen(true);
-    }
-  }, []);
-
-  const handleUpdatePassword = async (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setStatus({ type: 'error', msg: 'Hasła nie są identyczne!' });
-      return;
-    }
-
-    setIsLoading(true);
-    setStatus(null);
-
-    try {
-      // Supabase automatycznie rozpoznaje sesję z linku i pozwala na natychmiastową zmianę hasła zalogowanego użytkownika
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) throw error;
-
-      setStatus({ type: 'success', msg: 'Hasło zostało zmienione pomyślnie!' });
-      setTimeout(() => {
-        setIsOpen(false);
-        // Czyścimy tokeny i parametry z paska adresu URL, aby aplikacja wyglądała schludnie
-        window.history.replaceState(null, '', window.location.origin + window.location.pathname);
-      }, 2000);
-    } catch (err) {
-      console.error("Error updating password:", err);
-      setStatus({ type: 'error', msg: err.message || 'Wystąpił problem przy zapisie.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden p-8 animate-in zoom-in-95">
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-blue-100">
-            <Lock size={22} />
-          </div>
-          <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Ustaw Nowe Hasło</h2>
-          <p className="text-xs text-slate-400 mt-1">Wprowadź nowe, silne hasło zabezpieczające Twoje konto.</p>
-        </div>
-
-        {status && (
-          <div className={`p-4 rounded-xl text-xs font-bold mb-4 flex items-center gap-2 ${
-            status.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'
-          }`}>
-            {status.type === 'success' && <CheckCircle2 size={16} />}
-            <p>{status.msg}</p>
-          </div>
-        )}
-
-        )}
-
-        <form onSubmit={handleUpdatePassword} className="space-y-4">
-          <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 pl-1">Nowe Hasło</label>
-            <input 
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Minimum 8 znaków"
-              className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm transition-all"
-              required
-              minLength={8}
-            />
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 pl-1">Powtórz Nowe Hasło</label>
-            <input 
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Weryfikacja hasła"
-              className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm transition-all"
-              required
-            />
-          </div>
-
-          <button 
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-slate-900 hover:bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 uppercase text-xs tracking-widest disabled:bg-slate-300 mt-2"
-          >
-            {isLoading ? <Loader2 className="animate-spin" size={16} /> : <span>Zapisz Nowe Hasło</span>}
-          </button>
-        </form>
       </div>
     </div>
   );
